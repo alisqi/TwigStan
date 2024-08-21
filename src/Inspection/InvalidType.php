@@ -10,7 +10,7 @@ use Twig\NodeVisitor\AbstractNodeVisitor;
 
 class InvalidType extends AbstractNodeVisitor
 {
-    private const PRIMITIVE_TYPES = ['bool', 'float', 'int', 'string'];
+    private const PRIMITIVE_TYPES = ['array', 'bool', 'float', 'int', 'string', 'null'];
 
     /**
      * @throws TypeError
@@ -29,6 +29,11 @@ class InvalidType extends AbstractNodeVisitor
      */
     private function validateType(string $type, string $name, int $lineNo): void
     {
+        // remove optional ? prefix
+        if (str_starts_with($type, '?')) {
+            $type = substr($type, 1);
+        }
+        
         if (!in_array($type, self::PRIMITIVE_TYPES)) {
             throw new TypeError(sprintf(
                 'Invalid type "%s" for variable "%s" on line %d',
@@ -37,8 +42,9 @@ class InvalidType extends AbstractNodeVisitor
         }
     }
 
-    protected function doLeaveNode(Node $node, Environment $env): void
+    protected function doLeaveNode(Node $node, Environment $env): ?Node
     {
+        return $node;
     }
 
     public function getPriority(): int

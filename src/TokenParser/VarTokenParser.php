@@ -17,12 +17,13 @@ class VarTokenParser extends AbstractTokenParser
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();
 
+        $nullableOperator = $stream->nextIf(Token::PUNCTUATION_TYPE)?->getValue() ?? '';
         $type = $stream->expect(Token::NAME_TYPE)->getValue();
         $name = $stream->expect(Token::NAME_TYPE)->getValue();
 
         $stream->expect(Token::BLOCK_END_TYPE);
 
-        return new VarNode($type, $name, $lineno, $this->getTag());
+        return new VarNode($nullableOperator . $type, $name, $lineno, $this->getTag());
     }
 
     /**
