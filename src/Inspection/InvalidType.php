@@ -34,12 +34,18 @@ class InvalidType extends AbstractNodeVisitor
             $type = substr($type, 1);
         }
         
-        if (!in_array($type, self::PRIMITIVE_TYPES)) {
-            throw new TypeError(sprintf(
-                'Invalid type "%s" for variable "%s" on line %d',
-                $type, $name, $lineNo
-            ));
+        if (str_starts_with($type, '\\') && class_exists($type)) { // FQN class name
+            return;
         }
+        
+        if (in_array($type, self::PRIMITIVE_TYPES)) {
+            return;
+        }
+        
+        throw new TypeError(sprintf(
+            'Invalid type "%s" for variable "%s" on line %d',
+            $type, $name, $lineNo
+        ));
     }
 
     protected function doLeaveNode(Node $node, Environment $env): ?Node

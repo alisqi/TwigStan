@@ -44,4 +44,28 @@ class VarTokenTypeValidationTest extends AbstractTestCase
 
         $this->env->createTemplate('{% var bad foo %}')->render();
     }
+
+    public function test_itAcceptsClassType(): void
+    {
+        $this->env->createTemplate("{% var \Exception foo %}")
+            ->render();
+
+        $this->assertTrue(true);
+    }
+    
+    public function test_itAcceptsNullableClassType(): void
+    {
+        $this->env->createTemplate("{% var ?\Exception foo %}")
+            ->render();
+
+        $this->assertTrue(true);
+    }
+    
+    public function test_itThrowsIfTypeStartsWithInvalidPunctuation(): void
+    {
+        $this->expectExceptionMessage('Unexpected punctuation at start of type');
+        
+        $this->env->createTemplate("{% var .string foo %}")
+            ->render();
+    }
 }
